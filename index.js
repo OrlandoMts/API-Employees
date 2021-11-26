@@ -4,7 +4,14 @@ const port = 8080;
 
 const routerApi = require('./src/routes/index');
 
+// Este middleware se empieza a utilizar cuando quiero recibir informacion via JSON
+app.use(express.json());
+
 routerApi(app);
+
+app.listen(port, () => {
+  console.log('Jalando');
+});
 
 // app.get('/', (req, res) => {
 //   res.send('Oliver esta dormido');
@@ -68,8 +75,3 @@ routerApi(app);
 //       color: 'Gray',
 //     });
 // });
-
-
-app.listen(port, () => {
-  console.log('Jalando');
-});
