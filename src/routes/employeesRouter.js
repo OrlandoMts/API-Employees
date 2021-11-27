@@ -50,6 +50,26 @@ router.get('/entrance/:id', (req, res) => {
   });
 
   res.json(employeesEntranceId);
-})
+});
+
+router.patch('/:id', (req, res) => {
+  const { id } = req.params;
+  const body = req.body;
+
+  res.json({
+    message: 'update phone',
+    data: body,
+    id,
+  })
+});
+
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+
+  res.json({
+    message: 'delete employee',
+    id,
+  });
+});
 
 module.exports = router;
