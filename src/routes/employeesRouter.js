@@ -1,75 +1,76 @@
 const express = require('express');
 const faker = require('faker');
 const router = express.Router();
+const EmployeeService = require('../services/employeeService');
+const service = new EmployeeService(); //Al ser una clase debe ser instanciada para poder usarla
 
 router.get('/', (req, res) => {
-  let employees = [];
-  const { limit } = req.query;
-  // const size = limit || 10;
-
-  for (let i = 0; i < (limit || 3); i++) {
-    employees.push({
-      name: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      gender: faker.name.gender(),
-      phone: faker.phone.phoneNumber(),
-      entrance: faker.date.recent(),
-      photo: faker.image.people(),
-    });
-  }
-
-  res.json({
-    limit: limit || 'No limit defined',
-    data: employees,
-  })
+  const employees = service.findAll();
+  res.json(employees);
 });
 
-router.get('/entrance', (req, res) => {
-  let employeesEntrance = [];
+router.get('/entrances', (req, res) => {
+  const entrances = service.findEntrance();
+  const nuevoArray = [];
 
-  for (let i = 0; i < 2; i++) {
-    employeesEntrance.push({
-      name: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      entrance: faker.date.recent(),
-    });
-  }
-
-  res.json(employeesEntrance);
+  entrances.forEach(ele => {
+    nuevoArray.push({id:ele.id, name:ele.name, entrance:ele.entrance});
+  });
+  res.json(nuevoArray);
 })
+
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  const employee = service.findOne(id);
+
+  if(!employee) {
+    res.status(404).json({
+      message: 'Empleado no encontrado'
+    });
+  } else {
+    res.status(200).json(employee);
+  }
+});
 
 router.get('/entrance/:id', (req, res) => {
   let employeesEntranceId = [];
   const { id } = req.params;
 
-  employeesEntranceId.push({
-    id,
-    name: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    entrance: faker.date.recent(),
-  });
+  if(id === '456') {
+    res.status(404).json({
+      message: 'Not Found'
+    })
+  } else {
+    employeesEntranceId.push({
+      id,
+      name: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      entrance: faker.date.recent(),
+    });
+  }
 
-  res.json(employeesEntranceId);
+
+  res.status(200).json(employeesEntranceId);
 });
+
+router.post('/', (req, res) => {
+  const body = req.body;
+  const newEmployee = service.create(body);
+  res.status(201).json(newEmployee);
+})
+
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
   const body = req.body;
-
-  res.json({
-    message: 'update phone',
-    data: body,
-    id,
-  })
+  const employee = service.update(id, body);
+  res.json(employee)
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-
-  res.json({
-    message: 'delete employee',
-    id,
-  });
+  const rta = service.delete(id);
+  res.json(rta);
 });
 
 module.exports = router;
